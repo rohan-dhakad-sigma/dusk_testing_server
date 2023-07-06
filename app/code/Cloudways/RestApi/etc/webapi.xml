@@ -3,7 +3,7 @@
     <route method="POST" url="/V1/customapi">
         <service class="Cloudways\RestApi\Api\CustomInterface" method="getData" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Backend::admin"/>
         </resources>
     </route>
 </routes>

@@ -56,7 +56,7 @@ class Custom
         }
         $returnArray = json_encode($response);
         //dispatching event
-        $this->_eventManager->dispatch('custom_event',
+        $this->_eventManager->dispatch('dusklog_event',
             [
                 'record' => $response
             ]
