@@ -35,18 +35,25 @@ class AddDuskLogs implements ObserverInterface
 
     public function execute(Observer $observer)
     {
+        $logger = \Magento\Framework\App\ObjectManager::getInstance()->get(\Psr\Log\LoggerInterface::class);
+        $logger->info(__FUNCTION__."::".__LINE__);
         $data = [];
-        $duskApiLogModel = $this->duskApiLogFactory->create();
-        $recordData = $observer->getEvent()->getRecord();
+        try{
+            $duskApiLogModel = $this->duskApiLogFactory->create();
+            $recordData = $observer->getEvent()->getRecord();
+            $data['api_endpoint'] = $recordData['api_endpoint'];
+            $data['status_code'] = $recordData['status_code'];
+            $data['request_url'] = $recordData['api_endpoint'];
+            $data['request_body'] = $recordData['request_body'];
+            $data['response_body'] = $recordData['response_body'];
+            $data['created_at'] = $this->dateTime->formatDate(true);
+            $logger->info(print_r($data, true));
+            $duskApiLogModel->setData($data);
+            $duskApiLogModel->save();
+        } catch(\Exception $e){
+            $logger->info(__FUNCTION__."::".__LINE__." | Exception: ".$e->getMessage());
+        }
 
-        $data['status_code'] = $recordData['status_code'];
-        $data['request_url'] = $recordData['api_endpoint'];
-        $data['request_body'] = $recordData['request_body'];
-        $data['response_body'] = $recordData['response_body'];
-        $data['created_at'] = $this->dateTime->formatDate(true);
-
-        $duskApiLogModel->setData($data);
-        $duskApiLogModel->save();
         return $this;
     }
 }
